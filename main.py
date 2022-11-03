@@ -1,5 +1,3 @@
-from cmath import rect
-from turtle import update
 import pygame
 import time
 import random
@@ -18,19 +16,23 @@ green=(0,255,0)
 red=(255,0,0)
 white=(255,255,255)
 black=(0,0,0)
+yellow = (255,255,102)
+blue = (50,153,213)
 
-x1 = app_width/2
-y1 = app_height/2
 
 snake_block=10
 
-x1_change = 0
-y1_change = 0
+
 
 clock = pygame.time.Clock()
-snake_speed=30
+snake_speed=20
 
-font_style = pygame.font.SysFont(None, 50, bold=False, italic=False)
+font_style = pygame.font.SysFont("bahnschrift", 25, bold=False, italic=False)
+score_font = pygame.font.SysFont("comicsansms", 35, bold=False, italic=False)
+
+def snake(snake_block, snake_list):
+    for a in snake_list:
+        pygame.draw.rect(app, green, [a[0], a[1], snake_block, snake_block])
 
 def message(msg, color):
     mesg = font_style.render(msg, True, color)
@@ -45,6 +47,9 @@ def gameLoop():
 
     x1_change = 0
     y1_change = 0
+
+    snake_list = []
+    length_of_snake = 1
 
     x_of_food = round(random.randrange(0, app_width - snake_block) / 10.0) * 10.0
     y_of_food = round(random.randrange(0, app_width - snake_block) / 10.0) * 10.0
@@ -89,13 +94,27 @@ def gameLoop():
         x1 += x1_change
         y1 += y1_change
         app.fill(black)
-        pygame.draw.rect(app, green, [x1,y1,snake_block,snake_block])
+        
         pygame.draw.rect(app, red, [x_of_food, y_of_food , snake_block, snake_block])
+        snake_head = []
+        snake_head.append(x1)
+        snake_head.append(y1)
+        snake_list.append(snake_head)
+        if len(snake_list) > length_of_snake:
+            del snake_list[0]
+
+        for x in snake_list[:-1]:
+            if x == snake_head:
+                game_close = True
+
+        snake(snake_block, snake_list)
 
         pygame.display.update()
 
         if x1 == x_of_food and y1 == y_of_food:
-            print("Yummy!!")
+            x_of_food = round(random.randrange(0, app_width - snake_block) / 10.0) * 10.0
+            y_of_food = round(random.randrange(0, app_width - snake_block) / 10.0) * 10.0
+            length_of_snake += 1
 
         clock.tick(snake_speed)
     pygame.quit()
